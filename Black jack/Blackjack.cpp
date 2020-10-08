@@ -10,27 +10,28 @@ public:
 	int money{100};
 	std::vector<int> cards;
 	int score{0};
-	void CalcScore() {
+	int CalcScore() {
 		
 		for (int i = 0; i < cards.size(); i++)
 		{
 			score += cards.at(i);
 		}
 		if (score > 21) score = 0;
+
+		return score;
 	}
 };
-Player player;
-Player house;
 
 
-void drawcard(Player player) {
+
+void drawcard(Player &player) {
 
 	int randint = rand() % 10 + 1;
 	player.cards.push_back(randint);
 
 }
 
-void show_card(Player test) {
+void show_card(Player &player) {
 	std::cout << "\t\tCards: ";
 	for (int i = 0; i < player.cards.size(); i++)
 	{
@@ -39,17 +40,12 @@ void show_card(Player test) {
 	std::cout << "\n";
 }
 
-void info(Player test) {
-	std::cout << "\t\tYou got score of : " << test.score << std::endl;
-	std::cout << "\t\tYou got " << test.money << "$ left" << std::endl << std::endl;
+void info(Player &player) {
+	std::cout << "\t\tYou got score of : " << player.score << std::endl;
+	std::cout << "\t\tYou got " << player.money << "$ left" << std::endl << std::endl;
 }
-/*
-void infohouse() {
-	std::cout << "\t\thouse got score of : " << house.score << std::endl;
-	std::cout << "\t\thouse got " << house.money << "$ left" << std::endl;
-}
-*/
-void compare() {
+
+void compare(Player &house, Player &player) {
 	if (player.score == house.score){
 		std::cout << "draw";
 	}
@@ -62,23 +58,23 @@ void compare() {
 }
 
 
-void inpfromuser() {
+void inpfromuser(Player &house, Player &player) {
 	char todoo;
 
 	std::cout << "do you want to keep cards (k) or draw one more (d)";
 	std::cin >> todoo;
 	if (todoo == 'k') {
-		compare();
-		std::cout << "you wanted to hold cards";
+		compare(house, player);
+		// std::cout << "you wanted to hold cards";
 	}
 	else if (todoo == 'd') drawcard(player);
 	else{
 		std::cout << "Please write a valid input";
-		inpfromuser();
+		inpfromuser(house, player);
 	}
 }
 
-void houseai() {
+void houseai(Player &house, Player &player) {
 	if (house.score > 21)
 	{
 
@@ -90,6 +86,8 @@ void houseai() {
 }
 
 int main() {
+	Player player;
+	Player house;
 	bool game{ true };
 	srand(time(NULL));
 
@@ -100,14 +98,16 @@ int main() {
 
 	do
 	{
+		house.CalcScore();
+		player.CalcScore();
 		std::cout << "\t\tplayer\n";
 		show_card(player);
 		info(player);
 		std::cout << "\t\thouse\n";
 		show_card(house);
 		info(house);
-		inpfromuser();
-		houseai();
+		inpfromuser(house, player);
+		houseai(house, player);
 		
 
 	} while (game == true);
