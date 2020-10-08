@@ -22,33 +22,19 @@ public:
 Player player;
 Player house;
 
-/*
-void drawcard_player() {
+
+void drawcard(Player player) {
 
 	int randint = rand() % 10 + 1;
 	player.cards.push_back(randint);
-	
-	std::cout << "your cards: ";
-	for (int i = 0; i < player.cards.size(); i++)
-	{
-		std::cout << player.cards.at(i) << ' ';
-	}
-	std::cout << "\n";
-}
-
-*/
-void drawcard(Player test) {
-
-	int randint = rand() % 10 + 1;
-	test.cards.push_back(randint);
 
 }
 
 void show_card(Player test) {
 	std::cout << "\t\tCards: ";
-	for (int i = 0; i < test.cards.size(); i++)
+	for (int i = 0; i < player.cards.size(); i++)
 	{
-		std::cout << test.cards.at(i) << ' ';
+		std::cout << player.cards.at(i) << ' ';
 	}
 	std::cout << "\n";
 }
