@@ -57,7 +57,12 @@ void compare(Player &house, Player &player, int &pot) {
 	}
 	else if(house.score > player.score){
 		house.money += pot;
-		std::cout << "House won, house keeps the pot\n";
+		std::cout << "House won, house keeps the pot\n"
+			<< "\t\tHouse got score of " << house.score << std::endl;
+		show_card(house);
+		std::cout << "\t\tYou got score of " << player.score << std::endl;
+		show_card(player);
+
 	}
 }
 
@@ -125,6 +130,12 @@ void houseai(Player &house, Player &player) {
 		drawcard(house);
 		house.CalcScore();
 		player.CalcScore();
+
+		//stops infinite loop that breaks game
+		if (player.score == house.score)
+		{
+			break;
+		}
 	}
 	
 	// choose if ace is 1 or 11 
@@ -212,6 +223,9 @@ int main() {
 		compare(house, player, pot);
 		//clears house and players cards.
 		clear_round(house, player);
+		// std::cout << "\n\n Press a button to continue\n";
+		system("pause");
+		system("cls");
 
 	} while (game == true);
 
