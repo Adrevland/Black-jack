@@ -57,13 +57,13 @@ void compare(Player &house, Player &player, int &pot) {
 	}
 	else if(house.score > player.score){
 		house.money += pot;
-		std::cout << "House won, house keeps the pot\n"
-			<< "\t\tHouse got score of " << house.score << std::endl;
-		show_card(house);
-		std::cout << "\t\tYou got score of " << player.score << std::endl;
-		show_card(player);
-
+		std::cout << "House won, house keeps the pot\n";
 	}
+
+	std::cout << "\t\tHouse got score of " << house.score << std::endl;
+	show_card(house);
+	std::cout << "\t\tYou got score of " << player.score << std::endl;
+	show_card(player);
 }
 
 
@@ -77,12 +77,14 @@ void inpfromuser(Player &house, Player &player, bool &draw) {
 	}
 
 	std::cout << "do you want to keep cards (k) or draw one more (d)";
-	std::cin >> todoo;
+
+	//std::cin >> todoo;
+	//because std::cin freezes game sometimes
+	todoo = _getch();
+	std::cout << std::endl;
+
 	if (todoo == 'd') drawcard(player);
-	else if (todoo == 'k') {
-		draw = false;
-		// std::cout << "you wanted to hold cards";
-	}
+	else if (todoo == 'k') draw = false;
 	else{
 		std::cout << "Please write a valid input";
 		inpfromuser(house, player, draw);
@@ -91,15 +93,17 @@ void inpfromuser(Player &house, Player &player, bool &draw) {
 int placebet(Player &house ,Player &player) {
 	int bet;
 	int pot{20};
-
+	
 	std::cout << "how much would you like to bet? ";
 	std::cin >> bet;
+	
 	if (player.money - bet < 0 || house.money - bet < 0)
 	{
 		std::cout << "one of the players do not have enough money to bet \n";
 		placebet(house, player);
 	}
 	else {
+		system("cls");
 		pot += 2 * bet;
 		std::cout << "you betted " << bet << "$\n"
 			<< "house will match and total pot is: " << pot << "$\n";
@@ -114,9 +118,13 @@ void startround(Player &house, Player &player) {
 	house.money -= 10;
 	player.money -= 10;
 	std::cout << "bank has drawn 10$ from each account" << std::endl;
+
+	//draw two cards star of round
+	for (int i{ 0 }; i < 2; i++) {
+		drawcard(player);
+		drawcard(house);
+	}
 	
-	drawcard(player);
-	drawcard(house);
 }
 
 
@@ -126,16 +134,17 @@ void houseai(Player &house, Player &player) {
 
 	// to much gamble to draw card while score is 20
 	if (house.score == 20) return;
+	
+	//stops infinite loop sometimes. dont work.
+	if (player.score == house.score)return;
+
+	//the infinite loops gets created here, becuase house bust and get score of 0
 	while (player.score > house.score) {
 		drawcard(house);
 		house.CalcScore();
 		player.CalcScore();
-
-		//stops infinite loop that breaks game
-		if (player.score == house.score)
-		{
-			break;
-		}
+		//if house bust then return. without it creats infinite loop
+		if (house.score == 0) return;
 	}
 	
 	// choose if ace is 1 or 11 
@@ -193,6 +202,20 @@ int main() {
 		}
 		startround(house, player);
 		draw = true;
+		//show player cards
+		std::cout << std::endl << "\t\t    Your Deck\n";
+		show_card(player);
+		player.CalcScore();
+		house.CalcScore();
+		info(player);
+		//show first house card
+		std::cout << "\n\t\t\tHouse\n\t\tCards: " << house.cards.at(0); 
+		for (int j = 0; j < house.cards.size()-1; j++)std::cout << " X ";
+			std::cout << std::endl
+			<< "\t\tHouse got " << house.money << "$ left"<< std::endl <<std::endl ;
+
+		pot = placebet(house, player);
+		// system("cls");
 		do
 		{
 			
@@ -205,8 +228,12 @@ int main() {
 			info(player);
 
 			//prints houses money
-			std::cout << "\t\tHouse got "<< house.money << "$ left\n\n";
-			
+			// std::cout << "\t\tHouse got "<< house.money << "$ left\n\n";
+			std::cout << "\n\t\t\tHouse\n\t\tCards: " << house.cards.at(0);
+			for (int j = 0; j < house.cards.size()-1; j++)std::cout << " X ";
+			std::cout << std::endl
+				<< "\t\tHouse got " << house.money << "$ left" << std::endl << std::endl;
+
 			ifAce(player);
 			house.CalcScore();
 			inpfromuser(house, player, draw);
@@ -218,7 +245,7 @@ int main() {
 
 		} while (draw == true);
 
-		pot = placebet(house, player);
+		
 
 		compare(house, player, pot);
 		//clears house and players cards.
