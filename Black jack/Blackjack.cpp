@@ -13,9 +13,7 @@ public:
 	int CalcScore() {
 		score = 0;
 		for (int i = 0; i < cards.size(); i++)
-		{
 			score += cards.at(i);
-		}
 		if (score > 21) score = 0;
 
 		return score;
@@ -25,18 +23,14 @@ public:
 
 
 void drawcard(Player &player) {
-
 	int randint = rand() % 10 + 1;
 	player.cards.push_back(randint);
-
 }
 
 void show_card(Player &player) {
 	std::cout << "\t\tCards: ";
 	for (int i = 0; i < player.cards.size(); i++)
-	{
 		std::cout << player.cards.at(i) << ' ';
-	}
 	std::cout << "\n";
 }
 
@@ -77,16 +71,13 @@ void inpfromuser(Player &house, Player &player, bool &draw) {
 	}
 
 	std::cout << "do you want to keep cards (k) or draw one more (d)";
-
-	//std::cin >> todoo;
-	//because std::cin freezes game sometimes
 	todoo = _getch();
 	std::cout << std::endl;
 
 	if (todoo == 'd') drawcard(player);
 	else if (todoo == 'k') draw = false;
 	else{
-		std::cout << "Please write a valid input";
+		std::cout << "Please write a valid input\n";
 		inpfromuser(house, player, draw);
 	}
 }
@@ -132,35 +123,25 @@ void houseai(Player &house, Player &player) {
 	house.CalcScore();
 	player.CalcScore();
 
-	// to much gamble to draw card while score is 20
-	if (house.score == 20) return;
-	
-	//stops infinite loop sometimes. dont work.
-	if (player.score == house.score)return;
-
-	//the infinite loops gets created here, becuase house bust and get score of 0
 	while (player.score > house.score) {
+		// choose if ace is 1 or 11 
+		for (int i{ 0 }; i < house.cards.size(); i++) {
+			if (house.cards.at(i) == 1 || house.cards.at(i) == 11)
+			{
+				house.cards.at(i) == 11;
+				house.CalcScore();
+				if (house.score == 0 || house.score > 17) {
+					house.cards.at(i) == 1;
+					house.CalcScore();
+		}	}	}
+		//house not allowed to draw if score is more than 17
+		if (house.score > 17) return;
 		drawcard(house);
 		house.CalcScore();
 		player.CalcScore();
-		//if house bust then return. without it creats infinite loop
+		//if house bust then return.
 		if (house.score == 0) return;
 	}
-	
-	// choose if ace is 1 or 11 
-	for (int i{ 0 }; i < house.cards.size(); i++) {
-		if (house.cards.at(i) == 1 || house.cards.at(i) == 11)
-		{
-			
-			house.cards.at(i) == 11;
-			house.CalcScore();
-			if (house.score == 0) {
-				house.cards.at(i) == 1;
-				house.CalcScore();
-			}
-		}
-	}
-
 }
 
 void ifAce(Player &player) {
@@ -171,8 +152,8 @@ void ifAce(Player &player) {
 			std::cout << "Do you want your ace to be valued 1 or 11? ";
 			std::cin >> ace;
 			player.cards.at(i) = ace;
-		}
-	}
+		}	
+	}	
 }
 
 void clear_round(Player &house, Player &player) {
@@ -191,7 +172,7 @@ int main() {
 
 	srand(time(NULL));
 
-
+	//run game
 	do
 	{
 		
@@ -202,12 +183,14 @@ int main() {
 		}
 		startround(house, player);
 		draw = true;
+
 		//show player cards
 		std::cout << std::endl << "\t\t    Your Deck\n";
 		show_card(player);
 		player.CalcScore();
 		house.CalcScore();
 		info(player);
+
 		//show first house card
 		std::cout << "\n\t\t\tHouse\n\t\tCards: " << house.cards.at(0); 
 		for (int j = 0; j < house.cards.size()-1; j++)std::cout << " X ";
@@ -215,20 +198,19 @@ int main() {
 			<< "\t\tHouse got " << house.money << "$ left"<< std::endl <<std::endl ;
 
 		pot = placebet(house, player);
-		// system("cls");
+		
+		//run draw sequence
 		do
 		{
-			
+			system("cls");
 			house.CalcScore();
 			player.CalcScore();
 
-			//std::cout << "\t\tPlayer\n";
 			std::cout << std::endl << "\t\t    Your Deck\n";
 			show_card(player);
 			info(player);
 
 			//prints houses money
-			// std::cout << "\t\tHouse got "<< house.money << "$ left\n\n";
 			std::cout << "\n\t\t\tHouse\n\t\tCards: " << house.cards.at(0);
 			for (int j = 0; j < house.cards.size()-1; j++)std::cout << " X ";
 			std::cout << std::endl
@@ -237,28 +219,20 @@ int main() {
 			ifAce(player);
 			house.CalcScore();
 			inpfromuser(house, player, draw);
-			
-			// system("cls");
-
-
 			houseai(house, player);
 
 		} while (draw == true);
 
-		
-
 		compare(house, player, pot);
 		//clears house and players cards.
 		clear_round(house, player);
-		// std::cout << "\n\n Press a button to continue\n";
 		system("pause");
 		system("cls");
 
-	} while (game == true);
+	} while (game);
 
 	// checks who is broke 
 	if (house.money == 0) broke = "house";
 	else if (player.money == 0) broke = "You";
 	std::cout << "well played " << broke << " got broke\n";
-
 }
